@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Kaiut Yoga</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin-top: 20px;
+            margin-left: 22%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-header">
+        <div class="left-nav">
+            <a href="home.html">Página Inicial</a>
+        </div>
+        <div class="right-nav">
+            <a href="perfil.html"><i class='bx bxs-user'></i>Perfil</a>
+        </div>
+    </div>
+
+    <header>
+        <h1 id="statusH1">Sistema de Gestão Kaiut Yoga</h1>
+        <nav>
+            <ul>
+                <!-- Menu Alunos -->
+                <li>
+                    <a href="#">Alunos</a>
+                    <ul>
+                        <li><a href="alunos.html">Gerenciar alunos</a></li>
+                        <li><a href="alunos_cadastro.html">Cadastrar alunos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Planos -->
+                <li>
+                    <a href="#">Planos</a>
+                    <ul>
+                        <li><a href="planos.html">Gerenciar planos</a></li>
+                        <li><a href="planos_cadastro.html">Cadastrar planos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Relatórios -->
+                <li>
+                    <a href="#">Relatórios</a>
+                    <ul>
+                        <li><a href="relatorio_alunos.html">Relatórios Alunos</a></li>
+                        <li><a href="relatorio_financeiro.html">Relatório Vendas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Botão Vendas -->
+                <li>
+                    <a href="vendas.html" class="btn-vendas">Realizar uma venda</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="relatorios">
+            <h2>Relatório de Status dos Alunos</h2>
+            <button id="atualizarStatus">Atualizar Informações</button>
+
+            <!-- Tabela para exibir os dados -->
+            <table id="statusTable">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ativos</td>
+                        <td id="alunosAtivos">0</td>
+                    </tr>
+                    <tr>
+                        <td>Bloqueados</td>
+                        <td id="alunosBloqueados">0</td>
+                    </tr>
+                    <tr>
+                        <td>Cancelados</td>
+                        <td id="alunosCancelados">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const atualizarButton = document.getElementById('atualizarStatus');
+            const alunosAtivos = document.getElementById('alunosAtivos');
+            const alunosBloqueados = document.getElementById('alunosBloqueados');
+            const alunosCancelados = document.getElementById('alunosCancelados');
+    
+            // Função para buscar e atualizar os dados de status
+            function atualizarTabelaStatus() {
+                fetch('http://localhost:3000/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        renderStatus(data);
+                    })
+                    .catch(error => console.error('Erro ao buscar os dados de status:', error));
+            }
+    
+            // Renderiza os dados na tabela
+            function renderStatus(data) {
+                alunosAtivos.textContent = data.alunos_ativos;
+                alunosBloqueados.textContent = data.alunos_bloqueados;
+                alunosCancelados.textContent = data.alunos_cancelados;
+            }
+    
+            // Atualiza os status ao clicar no botão
+            atualizarButton.addEventListener('click', function () {
+                fetch('http://localhost:3000/status', {
+                    method: 'PUT',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Status atualizado com sucesso!');
+                        atualizarTabelaStatus(); // Atualiza a tabela com os novos dados
+                    } else {
+                        throw new Error('Erro ao atualizar status');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Houve um erro ao atualizar os status.');
+                });
+            });
+    
+            // Inicializa a tabela ao carregar a página
+            atualizarTabelaStatus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Kaiut Yoga</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="top-header">
+        <div class="left-nav">
+            <a href="home.html">Página Inicial</a>
+        </div>
+        <div class="right-nav">
+            <a href="perfil.html"><i class='bx bxs-user'></i>Perfil</a>
+        </div>
+    </div>
+
+    <header>
+        <h1>Sistema de Gestão Kaiut Yoga</h1>
+        <nav>
+            <ul>
+                <!-- Menu Alunos -->
+                <li>
+                    <a href="#">Alunos</a>
+                    <ul>
+                        <li><a href="alunos.html">Gerenciar alunos</a></li>
+                        <li><a href="alunos_cadastro.html">Cadastrar alunos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Planos -->
+                <li>
+                    <a href="#">Planos</a>
+                    <ul>
+                        <li><a href="planos.html">Gerenciar planos</a></li>
+                        <li><a href="planos_cadastro.html">Cadastrar planos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Relatórios -->
+                <li>
+                    <a href="#">Relatórios</a>
+                    <ul>
+                        <li><a href="relatorio_alunos.html">Relatórios Alunos</a></li>
+                        <li><a href="relatorio_financeiro.html">Relatório Vendas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Botão Vendas -->
+                <li>
+                    <a href="vendas.html" class="btn-vendas">Realizar uma venda</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="cadastro">
+            <h2>Cadastrar Aluno</h2>
+            <form id="cadastro-form">
+                <input type="text" name="cliente" placeholder="Nome" required>
+                <input type="date" name="nascimento" placeholder="Nascimento" required>
+                <input type="text" name="sexo" placeholder="Sexo" required>
+                <input type="text" name="status" placeholder="Status" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="contato" placeholder="Contato" required>
+                <input type="text" name="cpf" placeholder="CPF" required>
+                <input type="text" name="cep" placeholder="CEP" required>
+                <input type="text" name="logradouro" placeholder="Logradouro" required>
+                <input type="text" name="numero" placeholder="Número" required>
+                <input type="text" name="complemento" placeholder="Complemento" required>
+                <input type="text" name="bairro" placeholder="Bairro" required>
+                <input type="text" name="cidade" placeholder="Cidade" required>
+                <input type="text" name="uf" placeholder="UF" required>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        document.getElementById('cadastro-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            fetch('http://localhost:3000/alunos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao cadastrar aluno');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Aluno cadastrado com sucesso!');
+                this.reset();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar aluno');
+            });
+        });
+    </script>
+</body>
+</html>
+</html>

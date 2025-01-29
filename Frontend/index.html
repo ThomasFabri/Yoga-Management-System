@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Kaiut Yoga</title>
+</head>
+<body>
+    <h1>
+    Esta página ainda está em desenvolvimento!
+</h1>
+<a href="home.html">Página Inicial</a>
+
+<script>
+    // Função para obter o valor de um cookie pelo nome
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Verificar o valor do cookie 'username'
+    const expectedValue = 'admin';
+    const usernameCookie = getCookie('username');
+
+    if (usernameCookie === expectedValue) {
+        console.log('Usuário autenticado com sucesso.');
+    } else {
+        alert('Você não está autenticado. Faça login.');
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html>
+<style>
+    body {
+        margin-top: 180px;
+        padding: 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+    h1 {
+        padding: 10px 10px;
+        border: 5px solid black;
+    }
+</style>

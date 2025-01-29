@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realizar Venda</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="top-header">
+        <div class="left-nav">
+            <a href="home.html">Página Inicial</a>
+        </div>
+        <div class="right-nav">
+            <a href="perfil.html"><i class='bx bxs-user'></i>Perfil</a>
+        </div>
+    </div>
+    <header>
+        <h1>Sistema de Gestão Kaiut Yoga</h1>
+        <nav>
+            <ul>
+                <!-- Menu Alunos -->
+                <li>
+                    <a href="#">Alunos</a>
+                    <ul>
+                        <li><a href="alunos.html">Gerenciar alunos</a></li>
+                        <li><a href="alunos_cadastro.html">Cadastrar alunos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Planos -->
+                <li>
+                    <a href="#">Planos</a>
+                    <ul>
+                        <li><a href="planos.html">Gerenciar planos</a></li>
+                        <li><a href="planos_cadastro.html">Cadastrar planos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Relatórios -->
+                <li>
+                    <a href="#">Relatórios</a>
+                    <ul>
+                        <li><a href="relatorio_alunos.html">Relatórios Alunos</a></li>
+                        <li><a href="relatorio_financeiro.html">Relatório Vendas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Botão Vendas -->
+                <li>
+                    <a href="vendas.html" class="btn-vendas">Realizar uma venda</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="vendas">
+            <h2>Realizar Venda</h2>
+            <form id="vendaForm">
+                <div>
+                    <label for="alunoSelect">Selecionar Aluno:</label>
+                    <select id="alunoSelect" required>
+                        <option value="" disabled selected>Selecione um aluno</option>
+                        <!-- Alunos serão populados aqui -->
+                    </select>
+                </div>
+
+                <div>
+                    <label for="planoSelect">Selecionar Plano:</label>
+                    <select id="planoSelect" required>
+                        <option value="" disabled selected>Selecione um plano</option>
+                        <!-- Planos serão populados aqui -->
+                    </select>
+                </div>
+
+                <div>
+                    <label for="valorInput">Valor do Plano:</label>
+                    <input type="text" id="valorInput" readonly>
+                </div>
+
+                <!-- Campo para selecionar a data de início do plano -->
+                <div>
+                    <label for="dataInicio">Data de Início do Plano:</label>
+                    <input type="date" id="dataInicio" required>
+                </div>
+
+                <!-- Novo campo para inserir o número de meses de duração -->
+                <div>
+                    <label for="duracaoMeses">Duração do Plano (meses):</label>
+                    <input type="number" id="duracaoMeses" min="1" required>
+                </div>
+
+                <!-- Campo calculado para a data de término -->
+                <div>
+                    <label for="dataFim">Data de Término do Plano:</label>
+                    <input type="date" id="dataFim" readonly>
+                </div>
+
+                <div>
+                    <label for="descontoTipo">Tipo de Desconto:</label>
+                    <select id="descontoTipo">
+                        <option value="nenhum" selected>Sem desconto</option>
+                        <option value="percentual">Porcentagem (%)</option>
+                        <option value="fixo">Valor Fixo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="descontoValor">Valor do Desconto:</label>
+                    <input type="number" id="descontoValor" min="0" step="0.01" disabled>
+                </div>
+
+                <!-- Campo para exibir o valor final após todos os cálculos -->
+                <div>
+                    <label for="valorFinal">Valor Final com Desconto:</label>
+                    <input type="text" id="valorFinal" readonly>
+                </div>
+
+                <button type="submit">Confirmar Venda</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const alunoSelect = document.getElementById('alunoSelect');
+            const planoSelect = document.getElementById('planoSelect');
+            const valorInput = document.getElementById('valorInput');
+            const descontoTipo = document.getElementById('descontoTipo');
+            const descontoValor = document.getElementById('descontoValor');
+            const valorFinal = document.getElementById('valorFinal');
+            const dataInicio = document.getElementById('dataInicio');
+            const duracaoMeses = document.getElementById('duracaoMeses');
+            const dataFim = document.getElementById('dataFim');
+            const vendaForm = document.getElementById('vendaForm');
+
+            // Carregar alunos no dropdown
+            fetch('http://localhost:3000/alunos')
+                .then(response => response.json())
+                .then(alunos => {
+                    alunos.forEach(aluno => {
+                        const option = document.createElement('option');
+                        option.value = aluno.cliente;
+                        option.textContent = aluno.cliente;
+                        alunoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar alunos:', error));
+
+            // Carregar planos no dropdown
+            fetch('http://localhost:3000/planos')
+                .then(response => response.json())
+                .then(planos => {
+                    planos.forEach(plano => {
+                        const option = document.createElement('option');
+                        option.value = plano.nome;
+                        option.textContent = plano.nome;
+                        option.setAttribute('data-valor', plano.valor);
+                        planoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar planos:', error));
+
+            // Atualizar valor ao selecionar o plano
+            planoSelect.addEventListener('change', function () {
+                const selectedOption = planoSelect.options[planoSelect.selectedIndex];
+                valorInput.value = parseFloat(selectedOption.getAttribute('data-valor')).toFixed(2);
+                calcularValorFinal();
+            });
+
+            // Habilitar ou desabilitar o campo de valor de desconto
+            descontoTipo.addEventListener('change', function () {
+                if (descontoTipo.value !== "nenhum") {
+                    descontoValor.disabled = false;
+                } else {
+                    descontoValor.disabled = true;
+                    descontoValor.value = '';
+                }
+                calcularValorFinal();
+            });
+
+            // Recalcular o valor final ao mudar o valor do desconto ou a duração do plano
+            descontoValor.addEventListener('input', calcularValorFinal);
+            duracaoMeses.addEventListener('input', calcularValorFinal);
+
+            // Atualizar a data de término ao selecionar a data de início e a duração em meses
+            dataInicio.addEventListener('input', calcularDataFim);
+            duracaoMeses.addEventListener('input', calcularDataFim);
+
+            function calcularDataFim() {
+                const dataInicioValor = new Date(dataInicio.value);
+                const meses = parseInt(duracaoMeses.value) || 0;
+
+                if (dataInicio.value && meses > 0) {
+                    const dataFimValor = new Date(dataInicioValor);
+                    dataFimValor.setMonth(dataFimValor.getMonth() + meses); // Adiciona a duração em meses
+                    dataFim.value = dataFimValor.toISOString().split('T')[0]; // Formata a data para YYYY-MM-DD
+                } else {
+                    dataFim.value = '';
+                }
+            }
+
+            // Função para calcular o valor final com desconto e multiplicar pelo número de meses
+            function calcularValorFinal() {
+                let valorPlano = parseFloat(valorInput.value) || 0;
+                let desconto = parseFloat(descontoValor.value) || 0;
+                const meses = parseInt(duracaoMeses.value) || 1;
+
+                valorPlano *= meses; // Multiplica o valor do plano pelo número de meses
+
+                if (descontoTipo.value === 'percentual') {
+                    desconto = (desconto / 100) * valorPlano;
+                }
+
+                const valorComDesconto = Math.max(0, valorPlano - desconto); // Valor final não pode ser negativo
+                valorFinal.value = valorComDesconto.toFixed(2);
+            }
+
+            // Submeter o formulário para realizar a venda
+            vendaForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+              
+                const nomeAluno = alunoSelect.value; // Valor selecionado no dropdown de alunos
+                const nomePlano = planoSelect.value; // Valor selecionado no dropdown de planos
+                const valorPlano = parseFloat(valorFinal.value).toFixed(2); // Valor final calculado do plano
+                const dataInicioPlano = new Date(dataInicio.value); // Data de início selecionada
+                const duracaoEmMeses = parseInt(duracaoMeses.value); // Duração em meses selecionada
+              
+                // Calculando a data de término do plano
+                const dataFimPlano = new Date(dataInicioPlano);
+                dataFimPlano.setMonth(dataFimPlano.getMonth() + duracaoEmMeses);
+              
+                // Dados a serem enviados para a tabela de vendas
+                const vendaData = {
+                  nome_aluno: nomeAluno,
+                  nome_plano: nomePlano,
+                  valor: valorPlano,
+                  data_inicio: dataInicioPlano.toISOString().split('T')[0],
+                  data_fim: dataFimPlano.toISOString().split('T')[0],
+                  status: 'ativo' // Define o status como ativo
+                };
+              
+                // Atualizar o status do aluno para "ativo"
+                fetch(`http://localhost:3000/alunos/status/${nomeAluno}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ status: 'ativo' })
+                })
+                .then(() => {
+                  // Registrar a venda na tabela de vendas
+                  return fetch('http://localhost:3000/vendas', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(vendaData)
+                  });
+                })
+                .then(response => response.json())
+                .then(result => {
+                  alert(result.message);
+                  vendaForm.reset(); // Limpar o formulário após a venda
+                  alunoSelect.selectedIndex = 0;
+                  planoSelect.selectedIndex = 0;
+                  valorInput.value = '';
+                  valorFinal.value = '';
+                  descontoValor.disabled = true;
+                  dataFim.value = '';
+                })
+                .catch(error => console.error('Erro ao realizar venda:', error));
+              });
+        });
+    </script>
+</body>
+
+</html>

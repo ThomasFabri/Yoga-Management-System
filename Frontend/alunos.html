@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Kaiut Yoga</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="top-header">
+        <div class="left-nav">
+            <a href="home.html">Página Inicial</a>
+        </div>
+        <div class="right-nav">
+            <a href="perfil.html"><i class='bx bxs-user'></i>Perfil</a>
+        </div>
+    </div>
+
+    <header>
+        <h1>Sistema de Gestão Kaiut Yoga</h1>
+        <nav>
+            <ul>
+                <!-- Menu Alunos -->
+                <li>
+                    <a href="#">Alunos</a>
+                    <ul>
+                        <li><a href="alunos.html">Gerenciar alunos</a></li>
+                        <li><a href="alunos_cadastro.html">Cadastrar alunos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Planos -->
+                <li>
+                    <a href="#">Planos</a>
+                    <ul>
+                        <li><a href="planos.html">Gerenciar planos</a></li>
+                        <li><a href="planos_cadastro.html">Cadastrar planos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Relatórios -->
+                <li>
+                    <a href="#">Relatórios</a>
+                    <ul>
+                        <li><a href="relatorio_alunos.html">Relatórios Alunos</a></li>
+                        <li><a href="relatorio_financeiro.html">Relatório Vendas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Botão Vendas -->
+                <li>
+                    <a href="vendas.html" class="btn-vendas">Realizar uma venda</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="alunos">
+            <div class="filter-container">
+                <input type="text" id="searchInput" placeholder="Buscar aluno...">
+                <select id="statusFilter">
+                    <option value="">Todos os Status</option>
+                    <option value="ativo">Ativo</option>
+                    <option value="bloqueado">Bloqueado</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Nascimento</th>
+                        <th>Sexo</th>
+                        <th>Status</th>
+                        <th>Email</th>
+                        <th>Contato</th>
+                        <th>CPF</th>
+                        <th>CEP</th>
+                        <th>Logradouro</th>
+                        <th>Número</th>
+                        <th>Complemento</th>
+                        <th>Bairro</th>
+                        <th>Cidade</th>
+                        <th>UF</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="alunos-list">
+                    <!-- Alunos serão populados aqui -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const alunosList = document.getElementById('alunos-list');
+
+            fetch('http://localhost:3000/alunos')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Received data:', data); // Linha de depuração para verificar os dados
+                    renderAlunos(data); // Renderiza todos os alunos ao carregar a página
+
+                    searchInput.addEventListener('input', function() {
+                        applyFilters(data);
+                    });
+
+                    statusFilter.addEventListener('change', function() {
+                        applyFilters(data);
+                    });
+                })
+                .catch(error => console.error('Erro ao buscar dados:', error));
+
+            function applyFilters(data) {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value;
+
+                const filteredAlunos = data.filter(aluno => {
+                    const matchesName = aluno.cliente.toLowerCase().includes(searchTerm);
+                    const matchesStatus = selectedStatus === "" || aluno.status.toLowerCase() === selectedStatus.toLowerCase();
+
+                    return matchesName && matchesStatus;
+                });
+
+                renderAlunos(filteredAlunos);
+            }
+
+            function renderAlunos(alunos) {
+    alunosList.innerHTML = ''; // Limpa a lista atual de alunos
+
+    alunos.forEach(aluno => {
+        const tr = document.createElement('tr');
+
+        // Função para formatar a data
+        function formatarData(dataISO) {
+            const data = new Date(dataISO);
+            const dia = String(data.getDate() );
+            const mes = String(data.getMonth() );
+            const ano = data.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        // Função para criar célula
+        function createCell(value, propName) {
+            const td = document.createElement('td');
+            td.textContent = value;
+            td.setAttribute('data-prop', propName);
+            return td;
+        }
+
+        // Adiciona células à linha da tabela
+        tr.appendChild(createCell(aluno.cliente, 'cliente'));
+        tr.appendChild(createCell(formatarData(aluno.nascimento), 'nascimento')); // Formata a data
+        tr.appendChild(createCell(aluno.sexo, 'sexo'));
+        tr.appendChild(createCell(aluno.status, 'status')); // Coluna de status
+        tr.appendChild(createCell(aluno.email, 'email'));
+        tr.appendChild(createCell(aluno.contato, 'contato'));
+        tr.appendChild(createCell(aluno.cpf, 'cpf'));
+        tr.appendChild(createCell(aluno.cep, 'cep'));
+        tr.appendChild(createCell(aluno.logradouro, 'logradouro'));
+        tr.appendChild(createCell(aluno.numero, 'numero'));
+        tr.appendChild(createCell(aluno.complemento, 'complemento'));
+        tr.appendChild(createCell(aluno.bairro, 'bairro'));
+        tr.appendChild(createCell(aluno.cidade, 'cidade'));
+        tr.appendChild(createCell(aluno.uf, 'uf'));
+
+        // Botão para editar a linha
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Editar';
+        editBtn.addEventListener('click', function() {
+            toggleEditMode(tr, aluno);
+        });
+
+        // Botão para excluir a linha
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Excluir';
+        deleteBtn.addEventListener('click', function() {
+            deleteAluno(aluno.num, tr);
+        });
+
+        const actionsTd = document.createElement('td');
+        actionsTd.appendChild(editBtn);
+        actionsTd.appendChild(deleteBtn);
+        tr.appendChild(actionsTd);
+
+        alunosList.appendChild(tr);
+    });
+}
+            function toggleEditMode(tr, aluno) {
+                const isEditing = tr.classList.toggle('editing');
+
+                if (isEditing) {
+                    Array.from(tr.children).forEach(td => {
+                        if (td.hasAttribute('data-prop')) {
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.value = td.textContent;
+                            td.textContent = '';
+                            td.appendChild(input);
+                        }
+                    });
+                    tr.querySelector('button').textContent = 'Salvar';
+                } else {
+                    Array.from(tr.children).forEach(td => {
+                        if (td.hasAttribute('data-prop')) {
+                            const input = td.querySelector('input');
+                            td.textContent = input.value;
+                            aluno[td.getAttribute('data-prop')] = input.value;
+                        }
+                    });
+
+                    // Atualizar no servidor
+                    fetch(`http://localhost:3000/alunos/${aluno.num}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(aluno)
+                    })
+                    .then(response => response.text())
+                    .then(result => {
+                        console.log(result);
+                        alert('Aluno atualizado com sucesso!');
+                    })
+                    .catch(error => console.error('Erro ao atualizar dados:', error));
+
+                    tr.querySelector('button').textContent = 'Editar';
+                }
+            }
+
+            function deleteAluno(num, tr) {
+                if (confirm('Tem certeza que deseja excluir este aluno?')) {
+                    // Excluir no servidor
+                    fetch(`http://localhost:3000/alunos/${num}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.text())
+                    .then(result => {
+                        console.log(result);
+                        alert('Aluno excluído com sucesso!');
+                        tr.remove(); // Remove a linha da tabela
+                    })
+                    .catch(error => console.error('Erro ao excluir dados:', error));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

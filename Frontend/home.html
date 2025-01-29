@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Kaiut Yoga</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="top-header">
+        <div class="left-nav">
+            <a href="home.html">Página Inicial</a>
+        </div>
+        <div class="right-nav">
+            <a href="perfil.html"><i class='bx bxs-user'></i>Perfil</a>
+        </div>
+    </div>
+
+    <header>
+        <h1>Sistema de Gestão Kaiut Yoga</h1>
+        <nav>
+            <ul>
+                <!-- Menu Alunos -->
+                <li>
+                    <a href="#">Alunos</a>
+                    <ul>
+                        <li><a href="alunos.html">Gerenciar alunos</a></li>
+                        <li><a href="alunos_cadastro.html">Cadastrar alunos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Planos -->
+                <li>
+                    <a href="#">Planos</a>
+                    <ul>
+                        <li><a href="planos.html">Gerenciar planos</a></li>
+                        <li><a href="planos_cadastro.html">Cadastrar planos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Relatórios -->
+                <li>
+                    <a href="#">Relatórios</a>
+                    <ul>
+                        <li><a href="relatorio_alunos.html">Relatórios Alunos</a></li>
+                        <li><a href="relatorio_financeiro.html">Relatório Vendas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Botão Vendas -->
+                <li>
+                    <a href="vendas.html" class="btn-vendas">Realizar uma venda</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <!-- Bloco de conteúdo com informações -->
+    <main>
+        <section class="info-boxes">
+            <div class="info-box">
+                <h2>Nº de Alunos Ativos: <span id="numAtivos">X</span></h2>
+            </div>
+            <div class="info-box">
+                <h2>Nº de Alunos Bloqueados: <span id="numBloqueados">X</span></h2>
+            </div>
+        </section>
+    </main>
+    <script>
+                // Função para obter o valor de um cookie pelo nome
+                function getCookie(name) {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                }
+            
+                // Verificar o valor do cookie 'username'
+                const expectedValue = 'admin';
+                const usernameCookie = getCookie('username');
+            
+                if (usernameCookie === expectedValue) {
+                    console.log('Usuário autenticado com sucesso.');
+                } else {
+                    alert('Você não está autenticado. Faça login.');
+                    window.location.href = 'login.html';
+                }
+        
+        
+        module.exports = authenticateToken;
+    </script>
+</body>
+</html>

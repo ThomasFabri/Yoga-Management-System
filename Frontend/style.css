@@ -1,0 +1,173 @@
+  /* Estilo Geral */
+body {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Cabeçalho Fixo no Topo */
+.top-header {
+    background-color: #FFBC3A;
+    color: #660808;
+    padding: 10px 0;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-header a {
+    color: #660808;
+    margin: 0 20px;
+    padding: 5px 20px;
+    border: 3px solid #660808;
+    text-decoration: none;
+    border-radius: 15px;
+}
+
+.top-header i {
+    font-size: 14px;
+    padding: 4px;
+}
+
+/* Estilo do Header Principal */
+header {
+    background-color: #660808;
+    color: #FFBC3A;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    top: 30px;
+    left: 0;
+    z-index: 999;
+}
+
+header a {
+    color: #FFBC3A;
+    margin: 0 15px;
+    padding: 5px 25px;
+    border: 3px solid #FFBC3A;
+    text-decoration: none;
+    border-radius: 15px;
+}
+
+/* Estilo da Navegação com Dropdowns */
+nav {
+    background-color: #660808;
+    padding: 10px;
+    display: flex;
+    justify-content: center; /* Centraliza os itens de navegação */
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+nav ul li {
+    position: relative;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+}
+
+nav ul li ul {
+    display: none;
+    position: absolute;
+    background-color: #660808;
+    top: 100%;
+    left: 0;
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li ul li {
+    margin: 0;
+    border: 3px solid #FFBC3A;
+}
+
+nav ul li ul li a {
+    padding: 10px 15px;
+    width: 180px;
+    border-radius: 3px;
+    border-color: #660808;
+}
+
+nav ul li ul li:hover{
+    background-color: #440606;
+}
+
+nav ul li ul li a:hover{
+    border-color: #440606;
+}
+
+nav ul li:hover ul {
+    display: block;
+
+}
+
+/* Estilo para o botão Vendas */
+.btn-vendas {
+    background-color: #660808;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-left: 20px;
+}
+
+.btn-vendas:hover {
+    background-color: #440606;
+}
+
+/* Estilo da Seção */
+section {
+    background-color: #5b0b0b26;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    color: #660808;
+    text-align: center;
+    margin: 10px auto;
+    overflow-x: auto; /* Adiciona scroll horizontal quando necessário */
+    font-size: small;
+}
+
+/* Layout da Página Principal */
+main {
+    margin-top: 180px;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto; /* Adiciona scroll horizontal quando necessário */
+}
+
+/* Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #000000;
+    padding: 2px;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: black;
+}

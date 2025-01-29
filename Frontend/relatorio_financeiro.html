@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Kaiut Yoga</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="top-header">
+        <div class="left-nav">
+            <a href="home.html">Página Inicial</a>
+        </div>
+        <div class="right-nav">
+            <a href="perfil.html"><i class='bx bxs-user'></i>Perfil</a>
+        </div>
+    </div>
+
+    <header>
+        <h1>Sistema de Gestão Kaiut Yoga</h1>
+        <nav>
+            <ul>
+                <!-- Menu Alunos -->
+                <li>
+                    <a href="#">Alunos</a>
+                    <ul>
+                        <li><a href="alunos.html">Gerenciar alunos</a></li>
+                        <li><a href="alunos_cadastro.html">Cadastrar alunos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Planos -->
+                <li>
+                    <a href="#">Planos</a>
+                    <ul>
+                        <li><a href="planos.html">Gerenciar planos</a></li>
+                        <li><a href="planos_cadastro.html">Cadastrar planos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Menu Relatórios -->
+                <li>
+                    <a href="#">Relatórios</a>
+                    <ul>
+                        <li><a href="relatorio_alunos.html">Relatórios Alunos</a></li>
+                        <li><a href="relatorio_financeiro.html">Relatório Vendas</a></li>
+                    </ul>
+                </li>
+
+                <!-- Botão Vendas -->
+                <li>
+                    <a href="vendas.html" class="btn-vendas">Realizar uma venda</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="vendas">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Buscar registro...">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="vendas-list">
+                    <!-- vendas serão populados aqui -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const vendasList = document.getElementById('vendas-list');
+
+            fetch('http://localhost:3000/vendas')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Received data:', data);
+                    renderVendas(data); // Renderiza todos as vendas ao carregar a página
+
+                    searchInput.addEventListener('input', function() {
+                        const searchTerm = searchInput.value.toLowerCase();
+                        const filteredVendas = data.filter(vendas => {
+                            return vendas.nome.toLowerCase().includes(searchTerm);
+                        });
+
+                        renderVendas(filteredVendas); // Renderiza os planos filtrados
+                    });
+                })
+                .catch(error => console.error('Erro ao buscar dados:', error));
+
+            function renderVendas(vendas) {
+                vendasList.innerHTML = ''; // Limpa a lista atual de vendas
+
+                vendas.forEach(vendas => {
+                    const tr = document.createElement('tr');
+
+                    // Função para criar célula
+                    function createCell(value, propName) {
+                        const td = document.createElement('td');
+                        td.textContent = value;
+                        td.setAttribute('data-prop', propName);
+                        return td;
+                    }
+
+                    // Adiciona células à linha da tabela
+                    tr.appendChild(createCell(vendas.nome_aluno, 'nome'));
+                    tr.appendChild(createCell(vendas.data_venda, 'data'));
+                    tr.appendChild(createCell(vendas.valor, 'valor'));
+
+                    // Botão para editar a linha
+                    const editBtn = document.createElement('button');
+                    editBtn.textContent = 'Editar';
+                    editBtn.addEventListener('click', function() {
+                        toggleEditMode(tr, vendas);
+                    });
+
+                    // Botão para excluir a linha
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Excluir';
+                    deleteBtn.addEventListener('click', function() {
+                        deleteVendas(vendas.id, tr);
+                    });
+
+                    const actionsTd = document.createElement('td');
+                    actionsTd.appendChild(editBtn);
+                    actionsTd.appendChild(deleteBtn);
+                    tr.appendChild(actionsTd);
+
+                    vendasList.appendChild(tr);
+                });
+            }
+
+            function toggleEditMode(tr, vendas) {
+                const isEditing = tr.classList.toggle('editing');
+
+                if (isEditing) {
+                    Array.from(tr.children).forEach(td => {
+                        if (td.hasAttribute('data-prop')) {
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.value = td.textContent;
+                            td.textContent = '';
+                            td.appendChild(input);
+                        }
+                    });
+                    tr.querySelector('button').textContent = 'Salvar';
+                } else {
+                    Array.from(tr.children).forEach(td => {
+                        if (td.hasAttribute('data-prop')) {
+                            const input = td.querySelector('input');
+                            td.textContent = input.value;
+                            vendas[td.getAttribute('data-prop')] = input.value;
+                        }
+                    });
+
+                    // Atualizar no servidor
+                    fetch(`http://localhost:3000/vendas/${vendas.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(vendas)
+                    })
+                    .then(response => response.text())
+                    .then(result => {
+                        console.log(result);
+                        alert('Vendas atualizado com sucesso!');
+                    })
+                    .catch(error => console.error('Erro ao atualizar dados:', error));
+
+                    tr.querySelector('button').textContent = 'Editar';
+                }
+            }
+
+            function deleteVendas(id, tr) {
+                if (confirm('Tem certeza que deseja excluir esta Vendas?')) {
+                    // Excluir no servidor
+                    fetch(`http://localhost:3000/vendas/${id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.text())
+                    .then(result => {
+                        console.log(result);
+                        alert('Vendas excluído com sucesso!');
+                        tr.remove(); // Remove a linha da tabela
+                    })
+                    .catch(error => console.error('Erro ao excluir dados:', error));
+                }
+            }
+        });
+    </script>
+    
+    </body>
+    </html>
